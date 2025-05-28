@@ -1,3 +1,21 @@
+## Usage
+
+accepts a csv file that must have this below as the header:
+
+```
+offering_no,course_no,class_type,room,days,time,instructor,section,no_of_hours,remark
+```
+
+### CSV format
+
+`day`: concatenated string of any of the following: "M", "T", "W", "Th", "F"
+
+`time`: string of a range of time period, with the anything in this range written like "07:00-19:00"
+
+`remark`: number, turns reddish if value is > 0, grayish otherwise
+
+Almost everything else is used as a search filter
+
 # sv
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
