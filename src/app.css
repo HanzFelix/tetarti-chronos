@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+
+* {
+	--ec-border-color: var(--color-stone-500);
+	--ec-event-bg-color: var(--color-blue-300);
+}
+
+.ec-event {
+	border: 1px solid white;
+	outline: 1px solid white;
+	margin-left: 2px;
+}
+
+.ec-event-body {
+	padding: 2px;
+	transition-duration: 200ms;
+	line-height: 130%;
+}
+
+.ec-event-body:hover {
+	background-color: var(--color-green-300);
+}
+
+.ec-time-grid .ec-line,
+.ec-body .ec-time {
+	height: 32px !important; /* override this value */
+}
