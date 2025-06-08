@@ -4,6 +4,8 @@
 
 	let plugins = [TimeGrid];
 	let allEvents = $state([]);
+	let allSections = $state([]);
+	let allInstructors = $state([]);
 
 	let searchTerm = $state('');
 	function updatefilter() {
@@ -35,6 +37,14 @@
 		return { hour, minute };
 	}
 
+	function getSundayofCurrentWeek() {
+		const sunday = new Date();
+		const dayOfWeek = sunday.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
+		sunday.setDate(sunday.getDate() - dayOfWeek);
+		sunday.setHours(0, 0, 0, 0); // Optional: reset to midnight
+		return sunday;
+	}
+
 	// Given a base date (e.g., semester start), find the date of the next given weekday
 	function getNextDateOfWeekday(baseDate, weekday) {
 		const date = new Date(baseDate);
@@ -52,9 +62,10 @@
 			header: true,
 			skipEmptyLines: true,
 			complete: (results) => {
-				console.log(results);
-				const baseDate = new Date('05-25-2025'); // You can set this to semester start date
+				const baseDate = getSundayofCurrentWeek(); // You can set this to semester start date
 				const parsedEvents = [];
+				let parsedSections = new Set();
+				let parsedInstructors = new Set();
 
 				results.data.forEach((row) => {
 					// Extract fields
@@ -114,13 +125,15 @@
 						// Create event title
 						const title = `${offering_no} (${class_type}) -- ${room} -- {${instructor}} \n${section} - ${course_no}`;
 
+						parsedSections.add(section);
+						parsedInstructors.add(instructor);
 						parsedEvents.push({
 							id: `${offering_no}-${dayAbbr}-${startStr}`,
 							title,
 							start: startDate,
 							end: endDate,
 							extendedProps: {
-								other_details: `${instructor} ${room} ${section} ${class_type} D${days}`
+								other_details: `${instructor}-${section}S ${course_no} ${room} ${class_type} ${days}D`
 							},
 							styles: ['border: 1px solid white'],
 							backgroundColor: remark % 100 > 0 ? 'var(--color-rose-200)' : 'var(--color-zinc-300)'
@@ -129,6 +142,12 @@
 				});
 
 				allEvents = parsedEvents; // Update calendar events
+
+				allSections = Array.from(parsedSections);
+				allSections.sort();
+
+				allInstructors = Array.from(parsedInstructors);
+				allInstructors.sort();
 			}
 		});
 	}
@@ -147,9 +166,10 @@
 	<input
 		type="file"
 		accept=".csv"
-		onchange={handleFileUpload}
+		oninput={handleFileUpload}
 		class="basis-full border border-black"
 	/>
+	<button onclick={updatefilter}>Reload</button>
 </div>
 <div class="bg-gray-50">
 	<Calendar
@@ -170,4 +190,32 @@
 			headerToolbar: {}
 		}}
 	/>
+</div>
+<div>
+	{allSections.length}
+	{#each allSections as section}
+		<button
+			type="button"
+			aria-label={`btn-${section}`}
+			onclick={() => {
+				searchTerm = section + 'S';
+				updatefilter();
+			}}
+			class="mx-2 border p-2">{section}</button
+		>
+	{/each}
+</div>
+<div>
+	{allInstructors.length}
+	{#each allInstructors as instructor}
+		<button
+			type="button"
+			aria-label={`btn-${instructor}`}
+			onclick={() => {
+				searchTerm = instructor;
+				updatefilter();
+			}}
+			class="mx-2 border bg-amber-200 p-2">{instructor}</button
+		>
+	{/each}
 </div>
