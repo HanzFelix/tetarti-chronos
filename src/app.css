@@ -15,7 +15,6 @@
 	padding: 2px;
 	transition-duration: 200ms;
 	line-height: 130%;
-	font-weight: bold;
 }
 
 .ec-event-body:hover {
